@@ -7,7 +7,7 @@ on:
       - master
   workflow_dispatch:
 
-# الصلاحيات اللازمة لنشر صفحات GitHub Pages
+# الصلاحيات المطلوبة لنشر صفحات GitHub Pages
 permissions:
   contents: read
   pages: write
@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # المرحلة 1: التحقق من سلامة الأكواد والملفات
+  # المرحلة 1: فحص وتأكيد سلامة الأكواد والملفات
   build-and-verify:
     runs-on: ubuntu-latest
     steps:
@@ -48,7 +48,7 @@ jobs:
         with:
           path: '.'
 
-  # المرحلة 2: النشر المباشر على خوادم GitHub Pages
+  # المرحلة 2: النشر التلقائي المباشر على خوادم GitHub Pages
   deploy:
     environment:
       name: github-pages
