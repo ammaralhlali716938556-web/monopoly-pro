@@ -1,0 +1,61 @@
+name: Deploy Tactile Toymorphism Monopoly to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+# الصلاحيات اللازمة لنشر صفحات GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# منع تضارب عمليات النشر المتزامنة
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # المرحلة 1: التحقق من سلامة الأكواد والملفات
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify Game Modules & Syntax Integrity
+        run: |
+          echo "Verifying game configuration and logic..."
+          node -e "
+            const c = require('./js/config.js');
+            const a = require('./js/audio.js');
+            const g = require('./js/game.js');
+            const ai = require('./js/ai.js');
+            if (c.TILES.length !== 40) throw new Error('Missing tiles in config');
+            console.log('✅ Integrity check passed: 40 tiles, audio engine, game engine, and AI verified.');
+          "
+
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  # المرحلة 2: النشر المباشر على خوادم GitHub Pages
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-and-verify
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
