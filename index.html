@@ -9,20 +9,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <!-- Three.js 3D Library -->
+  <!-- مكتبة Three.js ثلاثية الأبعاد -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-  <!-- 3D WebGL Canvas -->
+  <!-- مسرح العرض ثلاثي الأبعاد -->
   <div id="canvas-container"></div>
 
-  <!-- Toast Container -->
+  <!-- حاوية التنبيهات المنبثقة -->
   <div id="toast-container"></div>
 
-  <!-- UI Overlay -->
+  <!-- طبقة الواجهات التفاعلية (Juicy UI Layer) -->
   <div id="ui-layer">
-    <!-- Top Bar: Players & Status -->
+    <!-- الشريط العلوي: بطاقات اللاعبين وحصالة الموقف المجاني -->
     <header class="top-bar interactive">
       <div class="players-bar" id="players-bar"></div>
       
@@ -36,17 +36,17 @@
       </div>
     </header>
 
-    <!-- Bottom Action Dock -->
+    <!-- منصة التحكم السفلية العريضة -->
     <footer class="bottom-dock interactive">
       <div class="turn-pill" id="turn-indicator">جاري تهيئة اللعبة...</div>
 
-      <!-- Juicy 3D Roll Button with Shimmer Sweep -->
+      <!-- زر رمي النرد الضخم مع تأثير اللمعان والانضغاط -->
       <button class="btn-juicy-roll" id="btn-roll">
         <span class="dice-icon">🎲</span>
         <span>ارمِ النرد!</span>
       </button>
 
-      <!-- Action Tabs -->
+      <!-- تبويبات الخيارات السريعة -->
       <nav class="action-tabs">
         <button class="btn-tab" id="btn-properties">
           <span>🏡</span>
@@ -64,7 +64,7 @@
     </footer>
   </div>
 
-  <!-- Modal: Buy Property -->
+  <!-- نافذة شراء العقارات -->
   <div class="modal-overlay" id="modal-buy">
     <div class="modal-box">
       <div class="modal-header">
@@ -89,7 +89,7 @@
     </div>
   </div>
 
-  <!-- Modal: Jail Decision -->
+  <!-- نافذة خيارات السجن -->
   <div class="modal-overlay" id="modal-jail">
     <div class="modal-box">
       <div class="modal-header">
@@ -108,7 +108,7 @@
     </div>
   </div>
 
-  <!-- Modal: Fortune Wheel -->
+  <!-- نافذة عجلة الحظ الميكانيكية -->
   <div class="modal-overlay" id="modal-wheel">
     <div class="modal-box" style="text-align: center;">
       <div class="modal-header">
@@ -127,7 +127,7 @@
     </div>
   </div>
 
-  <!-- Modal: Properties Management & Building -->
+  <!-- نافذة إدارة العقارات، البناء، الهدم، والرهن -->
   <div class="modal-overlay" id="modal-properties">
     <div class="modal-box">
       <div class="modal-header">
@@ -140,7 +140,7 @@
     </div>
   </div>
 
-  <!-- Modal: Trade & Negotiation -->
+  <!-- نافذة التفاوض والتبادل التجاري الذكي -->
   <div class="modal-overlay" id="modal-trade">
     <div class="modal-box">
       <div class="modal-header">
@@ -172,7 +172,7 @@
     </div>
   </div>
 
-  <!-- Modal: Settings -->
+  <!-- نافذة الإعدادات الشاملة -->
   <div class="modal-overlay" id="modal-settings">
     <div class="modal-box">
       <div class="modal-header">
@@ -210,7 +210,7 @@
     </div>
   </div>
 
-  <!-- Drawer: Game Log -->
+  <!-- درج سجل أحداث اللعبة الجانبي -->
   <aside class="log-drawer" id="log-drawer">
     <div class="log-header">
       <span>سجل أحداث اللعبة 📜</span>
@@ -219,7 +219,7 @@
     <div class="log-list" id="log-list"></div>
   </aside>
 
-  <!-- Game Scripts -->
+  <!-- سكربتات اللعبة البرمجية -->
   <script src="js/config.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/board3d.js"></script>
