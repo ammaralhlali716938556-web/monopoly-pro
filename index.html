@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مونوبولي تاكتيل 3D - Tactile Toymorphism Monopoly</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <!-- Three.js 3D Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- UI Overlay -->
+  <div id="ui-layer">
+    <!-- Top Bar: Players & Status -->
+    <header class="top-bar interactive">
+      <div class="players-bar" id="players-bar"></div>
+      
+      <div class="top-actions">
+        <div class="jackpot-badge" title="وعاء الموقف المجاني المتراكم">
+          <span>🚗💰</span>
+          <span id="jackpot-pool-amount">$100</span>
+        </div>
+        <button class="btn-icon" id="btn-settings" title="الإعدادات">⚙️</button>
+        <button class="btn-icon" id="btn-log" title="سجل اللعبة">📜</button>
+      </div>
+    </header>
+
+    <!-- Bottom Action Dock -->
+    <footer class="bottom-dock interactive">
+      <div class="turn-pill" id="turn-indicator">جاري تهيئة اللعبة...</div>
+
+      <!-- Juicy 3D Roll Button with Shimmer Sweep -->
+      <button class="btn-juicy-roll" id="btn-roll">
+        <span class="dice-icon">🎲</span>
+        <span>ارمِ النرد!</span>
+      </button>
+
+      <!-- Action Tabs -->
+      <nav class="action-tabs">
+        <button class="btn-tab" id="btn-properties">
+          <span>🏡</span>
+          <span>عقاراتي والبناء</span>
+        </button>
+        <button class="btn-tab" id="btn-trade">
+          <span>🤝</span>
+          <span>التفاوض التجاري</span>
+        </button>
+        <button class="btn-tab" id="btn-wheel">
+          <span>🎡</span>
+          <span>عجلة الحظ</span>
+        </button>
+      </nav>
+    </footer>
+  </div>
+
+  <!-- Modal: Buy Property -->
+  <div class="modal-overlay" id="modal-buy">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>شراء عقار جديد 🏡</h3>
+      </div>
+      <div class="modal-body">
+        <div class="prop-card-preview">
+          <div class="prop-color-bar" id="buy-prop-header">
+            <span id="buy-prop-name">اسم العقار</span>
+          </div>
+          <div class="prop-card-content">
+            <div class="prop-price-tag" id="buy-prop-price">$200</div>
+            <p>هل ترغب في امتلاك هذا العقار وبدء تحصيل الإيجارات من المنافسين؟</p>
+            <ul class="prop-rents-list" id="buy-prop-rents"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btn-pass-buy">تخطي</button>
+        <button class="btn-primary" id="btn-confirm-buy">تأكيد الشراء 💰</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Jail Decision -->
+  <div class="modal-overlay" id="modal-jail">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>أنت محتجز في السجن! 🔒</h3>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 16px; font-size: 14px; line-height: 1.6;">
+          اختر كيف تريد الخروج من السجن هذا الدور:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn-primary" id="btn-jail-roll" style="background:#0288D1;">🎲 محاولة رمي نرد مزدوج (مجاناً)</button>
+          <button class="btn-primary" id="btn-jail-bail" style="background:#E65100;">💸 دفع كفالة $50 والخروج فوراً</button>
+          <button class="btn-primary" id="btn-jail-card" style="background:#2E7D32;">🎫 استخدام بطاقة الخروج المجاني</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Fortune Wheel -->
+  <div class="modal-overlay" id="modal-wheel">
+    <div class="modal-box" style="text-align: center;">
+      <div class="modal-header">
+        <h3>🎡 عجلة الحظ الذهبية</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="wheel-wrapper">
+          <div class="wheel-pointer"></div>
+          <canvas id="wheel-canvas" width="300" height="300"></canvas>
+        </div>
+        <button class="btn-juicy-roll" id="btn-spin-wheel" style="margin: 0 auto; min-width: 200px;">
+          <span>دَوّر العجلة الآن! 🚀</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Properties Management & Building -->
+  <div class="modal-overlay" id="modal-properties">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>إدارة العقارات، البناء والرهن 🔨</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="properties-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Trade & Negotiation -->
+  <div class="modal-overlay" id="modal-trade">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>التفاوض وتبادل العقارات 🤝</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 10px;">
+          <label style="font-weight: bold; font-size: 13px;">اختر المنافس للتفاوض معه:</label>
+          <select id="trade-partner-select" style="width: 100%; padding: 8px; border-radius: 8px; margin-top: 4px;"></select>
+        </div>
+
+        <div class="trade-split">
+          <div class="trade-column">
+            <h4>ما تعرضه أنت:</h4>
+            <div class="trade-prop-list" id="trade-my-props"></div>
+            <input type="number" id="trade-my-cash" class="trade-cash-input" placeholder="مبلغ إضافي ($)" min="0" value="0">
+          </div>
+          <div class="trade-column">
+            <h4>ما تطلبه منه:</h4>
+            <div class="trade-prop-list" id="trade-their-props"></div>
+            <input type="number" id="trade-their-cash" class="trade-cash-input" placeholder="مبلغ مطلوب ($)" min="0" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="btn-submit-trade">تقديم العرض التجاري ✉️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Settings -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>⚙️ إعدادات اللعبة</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <label>المؤثرات الصوتية (SFX):</label>
+          <input type="checkbox" id="setting-sound" checked>
+        </div>
+        <div class="setting-row">
+          <label>مستوى الصوت:</label>
+          <input type="range" id="setting-volume" min="0" max="1" step="0.1" value="0.8">
+        </div>
+        <div class="setting-row">
+          <label>سرعة اللعبة والأدوار:</label>
+          <select id="setting-speed">
+            <option value="1">عادي (1x)</option>
+            <option value="2">سريع (2x)</option>
+            <option value="3">فائق السرعة (3x)</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>زاوية الكاميرا 3D:</label>
+          <select id="setting-camera">
+            <option value="isometric">ثلاثي الأبعاد تاكتيل (Isometric)</option>
+            <option value="topdown">نظرة علوية (Top-down)</option>
+          </select>
+        </div>
+        <div style="margin-top: 16px;">
+          <button class="btn-secondary" id="btn-restart-game" style="width: 100%; color: #C62828;">إعادة تشغيل اللعبة من البداية 🔄</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer: Game Log -->
+  <aside class="log-drawer" id="log-drawer">
+    <div class="log-header">
+      <span>سجل أحداث اللعبة 📜</span>
+      <button class="modal-close" onclick="document.getElementById('log-drawer').classList.remove('open')">&times;</button>
+    </div>
+    <div class="log-list" id="log-list"></div>
+  </aside>
+
+  <!-- Game Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/board3d.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/ui.js"></script>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const game = new MonopolyGame({
+        startingCash: 1500,
+        freeParkingJackpot: true,
+        doubleGo: true,
+        aiCount: 3
+      });
+      const board3d = new Board3D("canvas-container");
+      const ui = new MonopolyUI(game, board3d, sounds);
+
+      window.game = game;
+      window.board3d = board3d;
+      window.ui = ui;
+      window.sounds = sounds;
+    });
+  </script>
+</body>
+</html>
